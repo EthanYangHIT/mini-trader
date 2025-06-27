@@ -1,3 +1,5 @@
+**Online Preview:** [https://ethanyanghit.github.io/mini-trader/](https://ethanyanghit.github.io/mini-trader/)
+
 # 启动与构建说明
 
 ## 本地开发
