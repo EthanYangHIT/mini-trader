@@ -1,0 +1,48 @@
+.trade-layout {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.trade-left, .trade-right {
+  flex: 1;
+  min-width: 260px;
+  background: #181a20;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 8px #0002;
+}
+.trade-left h2 {
+  margin-top: 0;
+}
+.trade-left ul, .trade-right ul {
+  padding-left: 1.2em;
+}
+.trade-left button, .trade-right button {
+  margin-left: 0.5em;
+}
+.position-info {
+  display: flex;
+  align-items: center;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+.position-label {
+  color: #888;
+  font-weight: 500;
+}
+.position-value {
+  color: #222;
+  font-weight: 600;
+  margin-right: 4px;
+}
+.pl-profit {
+  color: #52c41a;
+  font-weight: bold;
+}
+.pl-loss {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+[data-theme='dark'] .position-value {
+  color: #eee;
+} 
