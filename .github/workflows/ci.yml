@@ -83,7 +83,7 @@ jobs:
           echo "=== npm ls vite output ==="
           npm ls vite
         env:
-          NODE_ENV: production
+          #NODE_ENV: production
 
       - name: Debug Vite configuration
         run: |
