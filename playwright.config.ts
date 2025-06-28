@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
-    baseURL: 'http://localhost:8080/mini-trader/',
+    baseURL: process.env.CI ? 'http://localhost:8080' : 'http://localhost:8080/mini-trader/',
   },
   projects: [
     {

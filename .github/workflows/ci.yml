@@ -69,15 +69,14 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      - name: Rename dist to mini-trader
-        run: mv dist mini-trader
+        env:
+          CI: true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-files
-          path: mini-trader/
+          path: dist/
 
   lighthouse:
     name: Lighthouse CI
@@ -107,13 +106,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-files
-          path: mini-trader/
+          path: dist/
 
       - name: Start local server
-        run: npx serve . -p 8080 --single &
+        run: npx serve dist/ -p 8080 --single &
 
       - name: Wait for server
-        run: sleep 5
+        run: sleep 10
 
       - name: Run Lighthouse CI
         run: npx @lhci/cli autorun
@@ -148,16 +147,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-files
-          path: mini-trader/
+          path: dist/
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Start local server
-        run: npx serve . -p 8080 --single &
+        run: npx serve dist/ -p 8080 --single &
 
       - name: Wait for server
-        run: sleep 5
+        run: sleep 10
 
       - name: Run Playwright tests
         run: npm run test
@@ -201,11 +200,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-files
-          path: mini-trader/
+          path: dist/
+
+      - name: Build for production
+        run: npm run build
+        env:
+          NODE_ENV: production
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./mini-trader
+          publish_dir: ./dist
           cname: ${{ secrets.CNAME }}

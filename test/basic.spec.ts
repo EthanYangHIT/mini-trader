@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+const basePath = process.env.CI ? '/' : '/mini-trader/';
+
 test('首页加载', async ({ page }) => {
-  await page.goto('/mini-trader/');
+  await page.goto(basePath);
   await expect(page).toHaveTitle(/Mini Crypto Trader/);
 });
 
 test('买单挂单生成', async ({ page }) => {
-  await page.goto('/mini-trader/');
+  await page.goto(basePath);
   // 切换到买入
   await page.getByTestId('trade-buy-btn').click();
   // 填写价格和数量

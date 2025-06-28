@@ -1,9 +1,10 @@
 const config = {
   ci: {
     collect: {
-      url: ['http://localhost:8080/mini-trader/'],
+      url: [process.env.CI ? 'http://localhost:8080/' : 'http://localhost:8080/mini-trader/'],
       startServerReadyPattern: 'Serving!',
       startServerReadyTimeout: 10000,
+      staticDistDir: './dist',
     },
     assert: {
       assertions: {
