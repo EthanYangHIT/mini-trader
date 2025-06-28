@@ -183,7 +183,7 @@ const Chart: React.FC<ChartProps> = ({ price, priceTimestamp, bgColor, pair, ada
         }
       }
     })();
-  }, [adapter, pair, timeInterval, showVWAP, bgColor]);
+  }, [adapter, pair, timeInterval, showVWAP]);
 
   // 当 VWAP 开关状态改变时，重新计算和渲染 VWAP
   useEffect(() => {
