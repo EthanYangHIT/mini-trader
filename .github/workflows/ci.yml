@@ -28,12 +28,9 @@ jobs:
           npm config set registry https://registry.npmjs.org/
           npm config set fund false
           npm config set audit false
-          npm config set optional false
 
       - name: Install dependencies
-        run: npm install --no-audit
-        env:
-          NODE_ENV: development
+        run: npm install --no-audit --no-optional
 
       - name: Run ESLint
         run: npm run lint
@@ -64,7 +61,6 @@ jobs:
           npm config set registry https://registry.npmjs.org/
           npm config set fund false
           npm config set audit false
-          npm config set optional false
 
       - name: Install dependencies
         run: npm install --no-audit
@@ -98,7 +94,6 @@ jobs:
           npm config set registry https://registry.npmjs.org/
           npm config set fund false
           npm config set audit false
-          npm config set optional false
 
       - name: Install dependencies
         run: npm install --no-audit
@@ -134,7 +129,6 @@ jobs:
           npm config set registry https://registry.npmjs.org/
           npm config set fund false
           npm config set audit false
-          npm config set optional false
 
       - name: Install dependencies
         run: npm install --no-audit
@@ -188,7 +182,6 @@ jobs:
           npm config set registry https://registry.npmjs.org/
           npm config set fund false
           npm config set audit false
-          npm config set optional false
 
       - name: Install dependencies
         run: npm install --no-audit
