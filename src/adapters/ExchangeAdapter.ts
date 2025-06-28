@@ -18,6 +18,20 @@ export interface PriceUpdate {
   timestamp: number;
 }
 
+export interface KlineData {
+  openTime: number;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volume: string;
+  closeTime: number;
+  quoteAssetVolume: string;
+  numberOfTrades: number;
+  takerBuyBaseAssetVolume: string;
+  takerBuyQuoteAssetVolume: string;
+}
+
 export interface ExchangeAdapter {
   connect(): void;
   disconnect(): void;
@@ -45,26 +59,85 @@ export class BinanceSpotAdapter implements ExchangeAdapter {
   private orderbookBuffer: OrderBookUpdate | null = null;
   private throttleTimer: number | null = null;
   private throttleInterval = 100; // ms
+  private isConnecting = false;
+  private connectionTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly connectionTimeoutMs = 10000; // 10s
 
   constructor(symbol: SymbolPair) {
     this.symbol = symbol;
   }
 
   async connect() {
-    if (this.ws) return;
-    this.snapshotLoaded = false;
-    this.bids.clear();
-    this.asks.clear();
-    await this.loadSnapshot();
-    const streams = [
-      `${this.symbol}@depth@100ms`,
-      `${this.symbol}@trade`,
-      `${this.symbol}@ticker`
-    ].join('/');
-    this.ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-    this.ws.onmessage = (event) => this.handleMessage(event);
-    this.ws.onclose = () => this.handleClose();
-    this.ws.onerror = () => this.handleError();
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) return;
+    if (this.isConnecting) return;
+
+    this.isConnecting = true;
+
+    try {
+      // 清理旧连接
+      if (this.ws) {
+        this.ws.onclose = null;
+        this.ws.onerror = null;
+        this.ws.onmessage = null;
+        this.ws.close();
+        this.ws = null;
+      }
+
+      this.snapshotLoaded = false;
+      this.bids.clear();
+      this.asks.clear();
+      await this.loadSnapshot();
+
+      const streams = [
+        `${this.symbol}@depth@100ms`,
+        `${this.symbol}@trade`,
+        `${this.symbol}@ticker`,
+      ].join('/');
+
+      this.ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+      // 设置连接超时
+      this.connectionTimeout = setTimeout(() => {
+        if (this.ws && this.ws.readyState !== WebSocket.OPEN) {
+          console.log('WebSocket connection timeout, retrying...');
+          this.ws.close();
+        }
+      }, this.connectionTimeoutMs);
+
+      this.ws.onopen = () => {
+        console.log(`WebSocket connected for ${this.symbol}`);
+        this.isConnecting = false;
+        this.reconnectAttempts = 0;
+        if (this.connectionTimeout) {
+          clearTimeout(this.connectionTimeout);
+          this.connectionTimeout = null;
+        }
+      };
+
+      this.ws.onmessage = (event) => this.handleMessage(event);
+      this.ws.onclose = (event) => {
+        console.log(`WebSocket closed for ${this.symbol}:`, event.code, event.reason);
+        this.isConnecting = false;
+        if (this.connectionTimeout) {
+          clearTimeout(this.connectionTimeout);
+          this.connectionTimeout = null;
+        }
+        this.handleClose();
+      };
+      this.ws.onerror = (error) => {
+        console.error(`WebSocket error for ${this.symbol}:`, error);
+        this.isConnecting = false;
+        if (this.connectionTimeout) {
+          clearTimeout(this.connectionTimeout);
+          this.connectionTimeout = null;
+        }
+        this.handleError();
+      };
+    } catch (error) {
+      console.error(`Failed to connect for ${this.symbol}:`, error);
+      this.isConnecting = false;
+      this.handleClose();
+    }
   }
 
   disconnect() {
@@ -72,9 +145,21 @@ export class BinanceSpotAdapter implements ExchangeAdapter {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    this.ws?.close();
-    this.ws = null;
+    if (this.connectionTimeout) {
+      clearTimeout(this.connectionTimeout);
+      this.connectionTimeout = null;
+    }
+    this.isConnecting = false;
     this.reconnectAttempts = 0;
+
+    if (this.ws) {
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.onmessage = null;
+      this.ws.close();
+      this.ws = null;
+    }
+
     this.snapshotLoaded = false;
     this.bids.clear();
     this.asks.clear();
@@ -96,7 +181,9 @@ export class BinanceSpotAdapter implements ExchangeAdapter {
   }
 
   private async loadSnapshot() {
-    const resp = await fetch(`https://api.binance.com/api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=1000`);
+    const resp = await fetch(
+      `https://api.binance.com/api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=1000`,
+    );
     const data = await resp.json();
     this.lastUpdateId = data.lastUpdateId;
     this.bids = new Map(data.bids);
@@ -118,7 +205,12 @@ export class BinanceSpotAdapter implements ExchangeAdapter {
     }
   }
 
-  private handleDepthUpdate(update: {u: number; U: number; b: [string, string][]; a: [string, string][]}) {
+  private handleDepthUpdate(update: {
+    u: number;
+    U: number;
+    b: [string, string][];
+    a: [string, string][];
+  }) {
     if (!this.snapshotLoaded) return;
     // 丢弃过期消息
     if (update.u <= this.lastUpdateId) return;
@@ -175,16 +267,31 @@ export class BinanceSpotAdapter implements ExchangeAdapter {
 
   private handleClose() {
     this.ws = null;
-    this.tryReconnect();
+    // 只有在非主动断开的情况下才尝试重连
+    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      this.tryReconnect();
+    } else {
+      console.log(`Max reconnection attempts reached for ${this.symbol}`);
+    }
   }
 
   private handleError() {
-    this.ws?.close();
+    if (this.ws) {
+      this.ws.close();
+    }
   }
 
   private tryReconnect() {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) return;
-    const delay = Math.min(this.baseDelay * 2 ** this.reconnectAttempts, this.maxDelay);
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.log(`Max reconnection attempts reached for ${this.symbol}`);
+      return;
+    }
+
+    const delay = Math.min(this.baseDelay * Math.pow(2, this.reconnectAttempts), this.maxDelay);
+    console.log(
+      `Attempting to reconnect ${this.symbol} in ${delay}ms (attempt ${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`,
+    );
+
     this.reconnectTimer = setTimeout(() => {
       this.reconnectAttempts++;
       this.connect();
@@ -201,5 +308,53 @@ export class BinanceSpotAdapter implements ExchangeAdapter {
 
   removeTradeUpdate() {
     this.tradeCb = null;
+  }
+
+  // 获取历史K线数据
+  async getKlineData(interval: string = '1h', limit: number = 100): Promise<KlineData[]> {
+    try {
+      const response = await fetch(
+        `https://api.binance.com/api/v3/klines?symbol=${this.symbol.toUpperCase()}&interval=${interval}&limit=${limit}`,
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      return data.map(
+        (
+          kline: [
+            number,
+            string,
+            string,
+            string,
+            string,
+            string,
+            number,
+            string,
+            number,
+            string,
+            string,
+          ],
+        ) => ({
+          openTime: kline[0],
+          open: kline[1],
+          high: kline[2],
+          low: kline[3],
+          close: kline[4],
+          volume: kline[5],
+          closeTime: kline[6],
+          quoteAssetVolume: kline[7],
+          numberOfTrades: kline[8],
+          takerBuyBaseAssetVolume: kline[9],
+          takerBuyQuoteAssetVolume: kline[10],
+        }),
+      );
+    } catch (error) {
+      console.error('Failed to fetch kline data:', error);
+      return [];
+    }
   }
 }

@@ -76,7 +76,8 @@
   background: var(--bg-card-dark);
   table-layout: fixed;
 }
-.orderbook-side th, .orderbook-side td {
+.orderbook-side th,
+.orderbook-side td {
   padding: 0.2rem 0.5rem;
   text-align: right;
   font-size: 0.95rem;
@@ -95,9 +96,63 @@
 .orderbook-side td {
   color: #eee;
 }
-.orderbook-side td.ask-price, .orderbook-side td.bid-price {
+.orderbook-side td.ask-price,
+.orderbook-side td.bid-price {
   transition: background 0.3s;
-  /* 渐变背景已由内联 style 控制 */
+  position: relative;
+  overflow: hidden;
+}
+
+/* 深度柱状图样式 */
+.depth-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 0;
+  transition: width 0.3s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+.depth-bar-ask {
+  background: linear-gradient(90deg, rgba(255, 77, 79, 0.15) 0%, rgba(255, 77, 79, 0.05) 100%);
+  border-right: 1px solid rgba(255, 77, 79, 0.2);
+}
+
+.depth-bar-bid {
+  background: linear-gradient(90deg, rgba(82, 196, 26, 0.15) 0%, rgba(82, 196, 26, 0.05) 100%);
+  border-right: 1px solid rgba(82, 196, 26, 0.2);
+}
+
+/* 确保价格文字在柱状图之上 */
+.orderbook-side td.ask-price,
+.orderbook-side td.bid-price {
+  position: relative;
+  z-index: 1;
+  padding-left: 8px;
+}
+
+/* 悬停效果 */
+.orderbook-side tr:hover .depth-bar-ask {
+  background: linear-gradient(90deg, rgba(255, 77, 79, 0.25) 0%, rgba(255, 77, 79, 0.1) 100%);
+}
+
+.orderbook-side tr:hover .depth-bar-bid {
+  background: linear-gradient(90deg, rgba(82, 196, 26, 0.25) 0%, rgba(82, 196, 26, 0.1) 100%);
+}
+
+/* 调整列宽 */
+.orderbook-side th:nth-child(1),
+.orderbook-side td:nth-child(1) {
+  width: 35%; /* 价格 */
+}
+.orderbook-side th:nth-child(2),
+.orderbook-side td:nth-child(2) {
+  width: 30%; /* 数量 */
+}
+.orderbook-side th:nth-child(3),
+.orderbook-side td:nth-child(3) {
+  width: 35%; /* 金额 */
 }
 .orderbook-center {
   display: flex;
@@ -118,7 +173,8 @@
   font-weight: bold;
   font-size: 1.3rem;
 }
-body, .container {
+body,
+.container {
   background: #181a20;
   color: #eee;
 }
@@ -139,22 +195,30 @@ body, .container {
   --text-main-dark: #eee;
 }
 
-body, .container {
+body,
+.container {
   background: var(--bg-main-dark);
   color: var(--text-main-dark);
 }
 
-[data-theme='light'] body, [data-theme='light'] .container {
+[data-theme='light'] body,
+[data-theme='light'] .container {
   background: var(--bg-main-light);
   color: var(--text-main-light);
 }
 
-.orderbook-side, .trade-left, .trade-right, .chart-placeholder {
+.orderbook-side,
+.trade-left,
+.trade-right,
+.chart-placeholder {
   background: var(--bg-card-dark);
   color: var(--text-main-dark);
 }
 
-[data-theme='light'] .orderbook-side, [data-theme='light'] .trade-left, [data-theme='light'] .trade-right, [data-theme='light'] .chart-placeholder {
+[data-theme='light'] .orderbook-side,
+[data-theme='light'] .trade-left,
+[data-theme='light'] .trade-right,
+[data-theme='light'] .chart-placeholder {
   background: var(--bg-card-light);
   color: var(--text-main-light);
 }
@@ -162,7 +226,8 @@ body, .container {
 [data-theme='light'] .orderbook-side table {
   background: var(--bg-card-light);
 }
-[data-theme='light'] .orderbook-side th, [data-theme='light'] .orderbook-side td {
+[data-theme='light'] .orderbook-side th,
+[data-theme='light'] .orderbook-side td {
   color: var(--text-main-light);
 }
 
@@ -198,7 +263,9 @@ header h1 {
     flex-direction: column;
     gap: 0.5rem;
   }
-  .orderbook-side, .trade-left, .trade-right {
+  .orderbook-side,
+  .trade-left,
+  .trade-right {
     min-width: 0;
     padding: 0.5rem 0.5rem;
   }
@@ -206,7 +273,8 @@ header h1 {
     flex-direction: column;
     gap: 0.5rem;
   }
-  .trade-left, .trade-right {
+  .trade-left,
+  .trade-right {
     padding: 0.5rem 0.5rem;
   }
   .orderbook-table-wrapper {
@@ -241,10 +309,13 @@ header h1 {
 }
 .orderbook-mask {
   position: absolute;
-  left: 0; top: 0; right: 0; bottom: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
-  background: rgba(245,246,250,0.7);
+  background: rgba(245, 246, 250, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,5 +323,5 @@ header h1 {
   pointer-events: all;
 }
 [data-theme='dark'] .orderbook-mask {
-  background: rgba(24,26,32,0.7);
+  background: rgba(24, 26, 32, 0.7);
 }

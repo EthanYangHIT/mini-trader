@@ -12,4 +12,4 @@ export function getStorage<T>(key: string, defaultValue: T): T {
 
 export function setStorage<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value));
-} 
+}

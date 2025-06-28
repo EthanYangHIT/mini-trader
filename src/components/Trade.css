@@ -3,7 +3,8 @@
   gap: 2rem;
   margin-top: 2rem;
 }
-.trade-left, .trade-right {
+.trade-left,
+.trade-right {
   flex: 1;
   min-width: 260px;
   background: #181a20;
@@ -14,10 +15,12 @@
 .trade-left h2 {
   margin-top: 0;
 }
-.trade-left ul, .trade-right ul {
+.trade-left ul,
+.trade-right ul {
   padding-left: 1.2em;
 }
-.trade-left button, .trade-right button {
+.trade-left button,
+.trade-right button {
   margin-left: 0.5em;
 }
 .position-info {
@@ -45,4 +48,4 @@
 }
 [data-theme='dark'] .position-value {
   color: #eee;
-} 
+}

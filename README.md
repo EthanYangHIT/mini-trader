@@ -54,6 +54,7 @@ npx playwright test
 ```
 
 ### 测试覆盖场景
+
 - 首页加载
 - 买单挂单生成（自动填写下单表单并断言挂单表格出现买单）
 
@@ -68,6 +69,7 @@ npx playwright test
 - pre-commit 钩子会自动运行 `eslint --fix` 和 `prettier --write`，保证代码风格统一。
 
 ### 跳过 pre-commit 钩子
+
 如需跳过钩子（不推荐），可在 commit 时加上 `--no-verify`：
 
 ```bash
@@ -101,20 +103,24 @@ flowchart TD
 1. **配置 Vite base 路径**
 
    在 `vite.config.ts` 中添加：
+
    ```ts
    export default defineConfig({
      base: '/mini-trader/', // 仓库名，前后都要有斜杠
      plugins: [react()],
-   })
+   });
    ```
+
    > 仓库名不是 mini-trader 时请相应修改。
 
 2. **安装 gh-pages 依赖**
+
    ```bash
    npm install --save-dev gh-pages
    ```
 
 3. **在 package.json 添加部署脚本**
+
    ```json
    "scripts": {
      "deploy": "npm run build && gh-pages -d dist"
@@ -122,6 +128,7 @@ flowchart TD
    ```
 
 4. **构建并部署**
+
    ```bash
    npm run deploy
    ```

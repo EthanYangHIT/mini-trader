@@ -3,7 +3,9 @@
 
 self.onmessage = function (e) {
   const { tradeHistory, symbol } = e.data;
-  let totalBuy = new self.Decimal(0), totalSell = new self.Decimal(0), totalCost = new self.Decimal(0);
+  let totalBuy = new self.Decimal(0),
+    totalSell = new self.Decimal(0),
+    totalCost = new self.Decimal(0);
   for (const t of tradeHistory) {
     if (t.symbol !== symbol) continue;
     if (t.side === 'buy') {
@@ -19,4 +21,4 @@ self.onmessage = function (e) {
     avgPrice: position.gt(0) ? totalCost.div(totalBuy).toNumber() : 0,
   };
   self.postMessage(result);
-}; 
+};

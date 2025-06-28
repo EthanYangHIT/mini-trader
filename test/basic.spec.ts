@@ -18,4 +18,4 @@ test('买单挂单生成', async ({ page }) => {
   await expect(page.getByTestId('order-row-buy')).toBeVisible();
   await expect(page.getByTestId('trade-amount-input')).toBeVisible();
   await expect(page.getByTestId('trade-price-input')).toBeVisible();
-}); 
+});

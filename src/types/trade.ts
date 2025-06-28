@@ -23,4 +23,4 @@ export interface TradeHistory {
 export interface AvgCostResult {
   amount: number;
   avgPrice: number;
-} 
+}

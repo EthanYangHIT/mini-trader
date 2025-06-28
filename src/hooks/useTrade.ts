@@ -35,7 +35,7 @@ export function useTrade(pair: string, price: string) {
 
   // 撤销
   function cancelOrder(id: string) {
-    const nextOrders = orders.filter(o => o.id !== id);
+    const nextOrders = orders.filter((o) => o.id !== id);
     setOrders(nextOrders);
     saveOrdersToStorage(nextOrders);
   }
@@ -46,7 +46,7 @@ export function useTrade(pair: string, price: string) {
     const currentPrice = parseFloat(price);
     let changed = false;
     const filledOrderIds: string[] = [];
-    const nextOrders = orders.map(order => {
+    const nextOrders = orders.map((order) => {
       if (order.status === 'open' && order.symbol === pair) {
         if (
           (order.side === 'buy' && currentPrice <= order.price) ||
@@ -64,11 +64,11 @@ export function useTrade(pair: string, price: string) {
       setOrders([...nextOrders]);
       saveOrdersToStorage(nextOrders);
       // 更新成交历史
-      const filledOrders = nextOrders.filter(o => o.status === 'filled');
+      const filledOrders = nextOrders.filter((o) => o.status === 'filled');
       const nextHistory = getTradeHistoryFromStorage();
       for (const fo of filledOrders) {
         if (fo.symbol !== pair) continue;
-        if (!nextHistory.find(h => h.id === fo.id)) {
+        if (!nextHistory.find((h) => h.id === fo.id)) {
           nextHistory.push({
             id: fo.id,
             side: fo.side,
@@ -89,4 +89,4 @@ export function useTrade(pair: string, price: string) {
   }, [price, pair, orders]);
 
   return { orders, tradeHistory, placeOrder, cancelOrder };
-} 
+}

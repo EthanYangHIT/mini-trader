@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import './App.css';
 import { BinanceSpotAdapter } from './adapters/ExchangeAdapter';
-import type { SymbolPair, PriceUpdate, Trade as TradeType, OrderBookUpdate } from './adapters/ExchangeAdapter';
+import type {
+  SymbolPair,
+  PriceUpdate,
+  Trade as TradeType,
+  OrderBookUpdate,
+} from './adapters/ExchangeAdapter';
 import Trade from './components/Trade';
 import { Select } from 'antd';
 import OrderBook from './components/OrderBook';
+import Chart from './components/Chart';
 
 const PAIRS: { label: string; value: SymbolPair }[] = [
   { label: 'BTC/USDT', value: 'btcusdt' },
@@ -20,6 +26,7 @@ interface AppProps {
 function App({ themeMode, setThemeMode }: AppProps) {
   const [pair, setPair] = useState<SymbolPair>('btcusdt');
   const [price, setPrice] = useState<string>('');
+  const [priceTimestamp, setPriceTimestamp] = useState<number>(0);
   const [volume, setVolume] = useState<string>('');
   const [bids, setBids] = useState<[string, string][]>([]);
   const [asks, setAsks] = useState<[string, string][]>([]);
@@ -39,19 +46,15 @@ function App({ themeMode, setThemeMode }: AppProps) {
     adapterRef.current = adapter;
     adapter.connect();
     let firstOrderbook = true;
-    let firstPrice = true;
     const setBidsLocal = setBids;
     const setAsksLocal = setAsks;
     const setPriceLocal = setPrice;
     const setVolumeLocal = setVolume;
     const setOrderbookLoadingLocal = setOrderbookLoading;
+    const setPriceTimestampLocal = setPriceTimestamp;
     adapter.onPriceUpdate((update: PriceUpdate) => {
-      if (firstPrice) {
-        setPriceLocal(update.price);
-        firstPrice = false;
-      } else {
-        setPriceLocal(update.price);
-      }
+      setPriceLocal(update.price);
+      setPriceTimestampLocal(update.timestamp);
     });
     adapter.onTrade((trade: TradeType) => {
       setVolumeLocal(trade.quantity);
@@ -82,9 +85,9 @@ function App({ themeMode, setThemeMode }: AppProps) {
         <h1>Mini Crypto Trader</h1>
         <Select
           value={pair}
-          onChange={v => setPair(v)}
+          onChange={(v) => setPair(v)}
           style={{ width: 140, marginLeft: 8 }}
-          options={PAIRS.map(p => ({ label: p.label, value: p.value }))}
+          options={PAIRS.map((p) => ({ label: p.label, value: p.value }))}
           styles={{ popup: { root: { minWidth: 120 } } }}
         />
         <button
@@ -96,17 +99,15 @@ function App({ themeMode, setThemeMode }: AppProps) {
         </button>
       </header>
       <main>
-        <div className="chart-placeholder">
-          <div className="price">Price: <span>{price || '--'}</span></div>
-          <div className="volume">Volume: <span>{volume || '--'}</span></div>
-          <div className="chart-icon">[TradingView Chart 预留区]</div>
-        </div>
-        <OrderBook
-          bids={bids}
-          asks={asks}
-          loading={orderbookLoading}
+        <Chart
+          price={price}
+          priceTimestamp={priceTimestamp}
+          volume={volume}
           bgColor={bgColor}
+          pair={pair}
+          adapter={adapterRef.current}
         />
+        <OrderBook bids={bids} asks={asks} loading={orderbookLoading} bgColor={bgColor} />
         <Trade pair={pair} price={price} />
       </main>
     </div>
