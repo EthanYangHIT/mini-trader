@@ -106,11 +106,8 @@ jobs:
           name: build-files
           path: dist/
 
-      - name: Install Lighthouse CI
-        run: npm install -g @lhci/cli@0.12.x
-
       - name: Run Lighthouse CI
-        run: lhci autorun
+        run: npx @lhci/cli autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
@@ -151,7 +148,7 @@ jobs:
         run: npx serve dist/ -p 8080 &
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npm run test
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
