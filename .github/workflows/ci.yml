@@ -63,7 +63,9 @@ jobs:
           npm config set audit false
 
       - name: Install dependencies
-        run: npm install --no-audit
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --no-audit
 
       - name: Build project
         run: npm run build
