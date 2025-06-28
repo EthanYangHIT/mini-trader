@@ -66,7 +66,10 @@ jobs:
         run: npm cache clean --force
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: |
+          npm ci --prefer-offline --no-audit
+          npm install vite@7.0.0 --save-dev
+          npm ls vite
         env:
           NODE_ENV: production
 
@@ -74,9 +77,11 @@ jobs:
         run: |
           echo "Current directory: $(pwd)"
           echo "Vite config exists: $(ls -la vite.config.ts)"
-          echo "Node modules vite: $(ls -la node_modules/vite/package.json)"
+          echo "Node modules vite: $(ls -la node_modules/vite/package.json 2>/dev/null || echo 'vite not in node_modules')"
           echo "Vite binary: $(which vite || echo 'vite not in PATH')"
           echo "Npx vite version: $(npx vite --version)"
+          echo "Npm list vite:"
+          npm list vite
 
       - name: Build project
         run: npm run build
