@@ -51,7 +51,7 @@ const calculateVWAP = (candles: (CandlestickData & { volume?: number })[]): Line
   return vwapData;
 };
 
-const Chart: React.FC<ChartProps> = ({ price, priceTimestamp, volume, bgColor, pair, adapter }) => {
+const Chart: React.FC<ChartProps> = ({ price, priceTimestamp, bgColor, pair, adapter }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -183,7 +183,7 @@ const Chart: React.FC<ChartProps> = ({ price, priceTimestamp, volume, bgColor, p
         }
       }
     })();
-  }, [adapter, pair, timeInterval, showVWAP]);
+  }, [adapter, pair, timeInterval, showVWAP, bgColor]);
 
   // 当 VWAP 开关状态改变时，重新计算和渲染 VWAP
   useEffect(() => {
@@ -252,9 +252,6 @@ const Chart: React.FC<ChartProps> = ({ price, priceTimestamp, volume, bgColor, p
         <div className="chart-info">
           <div className="price">
             Price: <span>{price || '--'}</span>
-          </div>
-          <div className="volume">
-            Volume: <span>{volume || '--'}</span>
           </div>
         </div>
         <div className="chart-controls">
