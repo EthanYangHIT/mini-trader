@@ -5,6 +5,7 @@ const config = {
       startServerCommand: 'npx serve dist/ -p 8080',
       startServerReadyPattern: 'Serving!',
       startServerReadyTimeout: 10000,
+      port: 8080,
     },
     assert: {
       assertions: {

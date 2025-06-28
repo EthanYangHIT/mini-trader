@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test('首页加载', async ({ page }) => {
-  await page.goto('http://localhost:5173');
+  await page.goto('/');
   await expect(page).toHaveTitle(/Mini Crypto Trader/);
 });
 
 test('买单挂单生成', async ({ page }) => {
-  await page.goto('http://localhost:5173');
+  await page.goto('/');
   // 切换到买入
   await page.getByTestId('trade-buy-btn').click();
   // 填写价格和数量
