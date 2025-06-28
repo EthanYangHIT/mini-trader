@@ -70,12 +70,13 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Verify Vite installation
+      - name: Debug Vite configuration
         run: |
-          echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
-          echo "Vite version: $(npx vite --version)"
-          ls -la node_modules/.bin/vite
+          echo "Current directory: $(pwd)"
+          echo "Vite config exists: $(ls -la vite.config.ts)"
+          echo "Node modules vite: $(ls -la node_modules/vite/package.json)"
+          echo "Vite binary: $(which vite || echo 'vite not in PATH')"
+          echo "Npx vite version: $(npx vite --version)"
 
       - name: Build project
         run: npm run build

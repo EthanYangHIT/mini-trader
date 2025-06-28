@@ -1,6 +1,4 @@
-import type { Config } from '@lhci/cli';
-
-const config: Config = {
+const config = {
   ci: {
     collect: {
       url: ['http://localhost:8080/mini-trader/'],
