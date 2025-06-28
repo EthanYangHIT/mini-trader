@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          path: .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -67,7 +69,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "=== Before npm install ==="
+          pwd
+          ls -la
+          echo "=== Removing existing node_modules and package-lock.json ==="
+          rm -rf node_modules package-lock.json
+          echo "=== Running npm install ==="
           npm install --no-audit
+          echo "=== After npm install ==="
+          ls -la node_modules/ | head -10
+          echo "=== npm ls output ==="
+          npm ls
+          echo "=== npm ls vite output ==="
           npm ls vite
         env:
           NODE_ENV: production
