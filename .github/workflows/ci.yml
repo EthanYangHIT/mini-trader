@@ -21,8 +21,16 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Configure npm
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set fund false
+          npm config set audit false
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
+        env:
+          NODE_ENV: development
 
       - name: Run ESLint
         run: npm run lint
@@ -48,8 +56,16 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Configure npm
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set fund false
+          npm config set audit false
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
+        env:
+          NODE_ENV: production
 
       - name: Build project
         run: npm run build
@@ -75,8 +91,14 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Configure npm
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set fund false
+          npm config set audit false
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -107,8 +129,14 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Configure npm
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set fund false
+          npm config set audit false
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -151,8 +179,14 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Configure npm
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set fund false
+          npm config set audit false
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
