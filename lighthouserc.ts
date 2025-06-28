@@ -2,10 +2,8 @@ const config = {
   ci: {
     collect: {
       url: ['http://localhost:8080/mini-trader/'],
-      startServerCommand: 'npx serve dist/ -p 8080',
       startServerReadyPattern: 'Serving!',
       startServerReadyTimeout: 10000,
-      port: 8080,
     },
     assert: {
       assertions: {
