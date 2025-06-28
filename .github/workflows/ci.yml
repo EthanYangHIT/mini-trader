@@ -28,7 +28,7 @@ jobs:
           npm config set audit false
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --no-audit
         env:
           NODE_ENV: development
 
@@ -67,8 +67,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --prefer-offline --no-audit
-          npm install vite@7.0.0 --save-dev
+          npm install --no-audit
           npm ls vite
         env:
           NODE_ENV: production
@@ -114,7 +113,7 @@ jobs:
           npm config set audit false
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --no-audit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -149,7 +148,7 @@ jobs:
           npm config set audit false
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --no-audit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -199,7 +198,7 @@ jobs:
           npm config set audit false
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --no-audit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
